@@ -75,7 +75,7 @@ a {
   margin: auto;
   max-width: 700px;
   width: 80%;
-  padding: 0 0 30px;
+  padding: 0;
 
   background-color: rgba(255, 255, 255, 0.1);
   box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.25);
@@ -178,7 +178,8 @@ a {
   color: #fff;
 }
 
-.city:hover {
+.city:hover,
+.code_link:hover {
   text-decoration: underline;
   text-decoration-thickness: 1px;
   text-decoration-skip-ink: none;
@@ -373,4 +374,18 @@ a {
   width: 100%;
   margin: 12px 0 0;
   text-align: center;
+}
+
+/* Link to the code */
+
+.code {
+  display: flex;
+  margin: 20px auto 0;
+  justify-content: center;
+  font-size: 12px;
+}
+
+.code_link {
+  color: #fff;
+  font-weight: 600;
 }
