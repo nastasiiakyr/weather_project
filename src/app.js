@@ -251,6 +251,12 @@ let weather = {
     "background day": "img/bg-snow-day.jpg",
     "background night": "img/bg-snow-night.jpg",
   },
+  thunderstorm: {
+    "icon day": "img/icon=thunderstorm.png",
+    "icon night": "img/icon=thunderstorm.png",
+    "background day": "img/bg_thunderstorm_day.jpg",
+    "background night": "img/bg_thunderstorm_night.jpg",
+  },
   sample: {
     "icon day": "☘️",
     "icon night": "☘️",
