@@ -154,8 +154,7 @@ a {
   color: #929292;
 }
 
-.search_input:focus,
-.search_input:valid {
+.search_input:focus {
   outline: none;
   border-color: transparent;
   background-color: transparent;

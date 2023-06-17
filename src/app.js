@@ -13,7 +13,6 @@ function apiFindCity(city) {
     temperature.innerHTML = Math.round(tempC);
     weatherCondition.innerHTML = locationData.weather[0].main;
     putWeatherCondition(locationData);
-    console.log(response.data.weather[0].main);
   });
 }
 
@@ -24,6 +23,11 @@ let searchCity = document.querySelector("#search_city");
 let currentCity = document.querySelector("#current_city");
 
 var tempC;
+
+function resetSearch() {
+  searchCity.value = "";
+  searchCity.blur();
+}
 
 function findSearchLocationData() {
   search.addEventListener("submit", function (event) {
@@ -38,6 +42,7 @@ function findSearchLocationData() {
     } else {
       event.preventDefault();
     }
+    resetSearch();
   });
 }
 
