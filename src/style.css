@@ -44,6 +44,7 @@ h1 {
   font-size: 32px;
   line-height: 36px;
   opacity: 0.95;
+  text-transform: capitalize;
 }
 
 h2 {
@@ -294,6 +295,7 @@ a {
 .weather_type_text {
   width: 80px;
   text-align: center;
+  text-transform: capitalize;
 }
 
 .vertical_line {

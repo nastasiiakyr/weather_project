@@ -35,9 +35,6 @@ function findSearchLocationData() {
     let searchLocationValue = searchCity.value;
     searchLocationValue = searchLocationValue.toString().trim();
     if (searchLocationValue) {
-      searchLocationValue =
-        searchLocationValue[0].toUpperCase() +
-        searchLocationValue.slice(1).toLowerCase();
       apiFindCity(searchLocationValue);
     } else {
       event.preventDefault();
