@@ -145,7 +145,7 @@ let hours = document.querySelector("#current_hours");
 let minutes = document.querySelector("#current_minutes");
 
 function cityCurrentTime(lat, lon) {
-  let apiUrlTime = `http://api.timezonedb.com/v2.1/get-time-zone?key=${apiKeyTime}&format=json&by=position&lat=${lat}&lng=${lon}`;
+  let apiUrlTime = `https://api.timezonedb.com/v2.1/get-time-zone?key=${apiKeyTime}&format=json&by=position&lat=${lat}&lng=${lon}`;
   axios.get(apiUrlTime).then(function (response) {
     let currentTimeUnix = new Date(response.data.timestamp * 1000);
     let currentTime = new Date(
