@@ -16,7 +16,7 @@ function apiFindCity(city) {
     temperature.innerHTML = Math.round(tempC);
     weatherCondition.innerHTML = locationData.weather[0].main;
     putWeatherCondition(locationData);
-    if (city === "Kyiv") {
+    if (city.toLowerCase().trim() === "kyiv") {
       cityCurrentTime(50, 30);
     } else {
       cityCurrentTime(lat, lon);
