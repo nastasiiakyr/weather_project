@@ -16,7 +16,11 @@ function apiFindCity(city) {
     temperature.innerHTML = Math.round(tempC);
     weatherCondition.innerHTML = locationData.weather[0].main;
     putWeatherCondition(locationData);
-    cityCurrentTime(lat, lon);
+    if (city === "Kyiv") {
+      cityCurrentTime(50, 30);
+    } else {
+      cityCurrentTime(lat, lon);
+    }
     console.log(locationData);
   });
 }
@@ -148,6 +152,7 @@ function cityCurrentTime(lat, lon) {
       currentTimeUnix.toLocaleString("en-US", { timeZone: "UTC" })
     );
     console.log(`Реальное время: ${currentTime}`);
+    console.log(response.data);
     let months = [
       "January",
       "February",
