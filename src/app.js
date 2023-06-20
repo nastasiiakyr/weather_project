@@ -15,11 +15,10 @@ function apiFindCity(city) {
     tempC = locationData.main.temp;
     temperature.innerHTML = Math.round(tempC);
     weatherCondition.innerHTML = locationData.weather[0].main;
-    putWeatherCondition(locationData);
     if (city.toLowerCase().trim() === "kyiv") {
-      cityCurrentTime(50, 30);
+      cityCurrentTime(50, 30, locationData);
     } else {
-      cityCurrentTime(lat, lon);
+      cityCurrentTime(lat, lon, locationData);
     }
     console.log(locationData);
   });
@@ -101,8 +100,7 @@ function findCurrentLocationData() {
       tempC = currentLocationData.main.temp;
       temperature.innerHTML = Math.round(tempC);
       weatherCondition.innerHTML = currentLocationData.weather[0].main;
-      putWeatherCondition(currentLocationData);
-      cityCurrentTime(lat, lon);
+      cityCurrentTime(lat, lon, currentLocationData);
     });
   });
 }
@@ -144,7 +142,7 @@ let date = document.querySelector("#current_date");
 let hours = document.querySelector("#current_hours");
 let minutes = document.querySelector("#current_minutes");
 
-function cityCurrentTime(lat, lon) {
+function cityCurrentTime(lat, lon, location) {
   let apiUrlTime = `https://api.timezonedb.com/v2.1/get-time-zone?key=${apiKeyTime}&format=json&by=position&lat=${lat}&lng=${lon}`;
   axios.get(apiUrlTime).then(function (response) {
     let currentTimeUnix = new Date(response.data.timestamp * 1000);
@@ -212,6 +210,7 @@ function cityCurrentTime(lat, lon) {
       }
     }
     minutes.innerHTML = minType(minutes);
+    putWeatherCondition(location);
   });
 }
 
