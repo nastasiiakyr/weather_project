@@ -1,18 +1,23 @@
 // API Key
 
-let apiKey = "8cd9be374c7c96c39a9fe73f4bf2f055";
+let apiKeyWeather = "8cd9be374c7c96c39a9fe73f4bf2f055";
+let apiKeyTime = "ESJVB6GUV4NN";
 
 // City detecting
 
 function apiFindCity(city) {
-  let apiUrlCity = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+  let apiUrlCity = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKeyWeather}&units=metric`;
   axios.get(apiUrlCity).then(function (response) {
     let locationData = response.data;
+    let lat = locationData.coord.lat;
+    let lon = locationData.coord.lon;
     currentCity.innerHTML = locationData.name;
     tempC = locationData.main.temp;
     temperature.innerHTML = Math.round(tempC);
     weatherCondition.innerHTML = locationData.weather[0].main;
     putWeatherCondition(locationData);
+    cityCurrentTime(lat, lon);
+    console.log(locationData);
   });
 }
 
@@ -85,7 +90,7 @@ function findCurrentLocationData() {
   navigator.geolocation.getCurrentPosition(function (position) {
     let lat = position.coords.latitude;
     let lon = position.coords.longitude;
-    let apiUrlCurrent = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`;
+    let apiUrlCurrent = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKeyWeather}&units=metric`;
     axios.get(apiUrlCurrent).then(function (response) {
       let currentLocationData = response.data;
       currentCity.innerHTML = currentLocationData.name;
@@ -93,6 +98,7 @@ function findCurrentLocationData() {
       temperature.innerHTML = Math.round(tempC);
       weatherCondition.innerHTML = currentLocationData.weather[0].main;
       putWeatherCondition(currentLocationData);
+      cityCurrentTime(lat, lon);
     });
   });
 }
@@ -128,72 +134,81 @@ let locationData = findLocationData();
 
 // Current time of the city
 
-let currentTime = new Date();
-let months = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
-];
-let days = [
-  "Sunday",
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
-];
-
 let day = document.querySelector("#current_day");
-day.innerHTML = days[currentTime.getDay()];
-
 let month = document.querySelector("#current_month");
-month.innerHTML = months[currentTime.getMonth()];
-
 let date = document.querySelector("#current_date");
-function dateType(date) {
-  if (date < 10) {
-    return "0" + currentTime.getDate();
-  } else {
-    return currentTime.getDate();
-  }
-}
-date.innerHTML = dateType(date);
-
 let hours = document.querySelector("#current_hours");
-function hoursType(hours) {
-  hours = currentTime.getHours();
-  if (hours === 0) {
-    return "0" + hours;
-  } else if (hours < 10) {
-    return "0" + hours;
-  } else {
-    return hours;
-  }
-}
-hours.innerHTML = hoursType(hours);
-
 let minutes = document.querySelector("#current_minutes");
-function minType(min) {
-  min = currentTime.getMinutes();
-  if (min === 0) {
-    return "0" + min;
-  } else if (min < 10) {
-    return "0" + min;
-  } else {
-    return min;
-  }
+
+function cityCurrentTime(lat, lon) {
+  let apiUrlTime = `http://api.timezonedb.com/v2.1/get-time-zone?key=${apiKeyTime}&format=json&by=position&lat=${lat}&lng=${lon}`;
+  axios.get(apiUrlTime).then(function (response) {
+    let currentTimeUnix = new Date(response.data.timestamp * 1000);
+    let currentTime = new Date(
+      currentTimeUnix.toLocaleString("en-US", { timeZone: "UTC" })
+    );
+    console.log(`Реальное время: ${currentTime}`);
+    let months = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
+    let days = [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+    ];
+
+    day.innerHTML = days[currentTime.getDay()];
+    month.innerHTML = months[currentTime.getMonth()];
+
+    function dateType(date) {
+      if (date < 10) {
+        return "0" + currentTime.getDate();
+      } else {
+        return currentTime.getDate();
+      }
+    }
+    date.innerHTML = dateType(date);
+
+    function hoursType(hours) {
+      hours = currentTime.getHours();
+      if (hours === 0) {
+        return "0" + hours;
+      } else if (hours < 10) {
+        return "0" + hours;
+      } else {
+        return hours;
+      }
+    }
+    hours.innerHTML = hoursType(hours);
+
+    function minType(min) {
+      min = currentTime.getMinutes();
+      if (min === 0) {
+        return "0" + min;
+      } else if (min < 10) {
+        return "0" + min;
+      } else {
+        return min;
+      }
+    }
+    minutes.innerHTML = minType(minutes);
+  });
 }
-minutes.innerHTML = minType(minutes);
 
 // Celsius & Fahrenheit switchng
 
@@ -272,21 +287,21 @@ function putWeatherCondition(location) {
   condition = condition.toLowerCase().trim();
   if (
     weather.hasOwnProperty(condition) &&
-    hours.innerHTML >= 08 &&
-    hours.innerHTML < 20
+    hours.innerHTML >= "08" &&
+    hours.innerHTML < "20"
   ) {
     weatherIcon.src = weather[condition]["icon day"];
     weatherBg.style.backgroundImage = `url("${weather[condition]["background day"]}")`;
     weatherImg.style.backgroundImage = `url("${weather[condition]["background day"]}")`;
   } else if (
     weather.hasOwnProperty(condition) &&
-    (hours.innerHTML >= 20 || hours.innerHTML < 08)
+    (hours.innerHTML >= "20" || hours.innerHTML < "08")
   ) {
     weatherIcon.src = weather[condition]["icon night"];
     weatherBg.style.backgroundImage = `url("${weather[condition]["background night"]}")`;
     weatherImg.style.backgroundImage = `url("${weather[condition]["background night"]}")`;
   } else {
-    if (hours.innerHTML >= 08 && hours.innerHTML < 20) {
+    if (hours.innerHTML >= "08" && hours.innerHTML < "20") {
       weatherIcon.src = weather.sample["icon day"];
       weatherBg.style.backgroundImage = `url("${weather.sample["background day"]}")`;
       weatherImg.style.backgroundImage = `url("${weather.sample["background day"]}")`;
