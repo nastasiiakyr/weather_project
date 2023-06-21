@@ -278,24 +278,41 @@ a {
 }
 
 .weather_type {
+  display: flex;
   width: fit-content;
-  margin: 0;
   padding: 0;
+  margin: 0;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
   top: 0;
 }
 
 .weather_type_icon {
   display: block;
   top: 0;
-  width: 40px;
-  height: 40px;
-  margin: 0 auto 4px;
+  width: 60px;
+  height: 60px;
+  margin: 0 8px 0 0;
 }
 
 .weather_type_text {
-  width: 80px;
-  text-align: center;
+  text-align: left;
+  width: fit-content;
+}
+
+.weather_type_text h3 {
+  display: flex;
+  flex-direction: row;
+  width: fit-content;
+  margin: 3px 0;
+  padding: 0;
+}
+
+.weather_type_text span {
+  margin: 0 5px;
   text-transform: capitalize;
+  width: fit-content;
 }
 
 .vertical_line {
