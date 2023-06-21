@@ -318,3 +318,37 @@ function putWeatherCondition(location) {
     }
   }
 }
+
+// Weather forecast
+
+function forecastHTML() {
+  let forecastSection = document.querySelector("#forecast");
+
+  let daysForecastHTML = [
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
+
+  let forecastHTML = `<div class = "forecast">`;
+
+  daysForecastHTML.forEach(function (day) {
+    forecastHTML =
+      forecastHTML +
+      `
+  <div class="day">
+          <img src="img/icon=rain-with-thunder.png" alt="☘️" width="48px" />
+          <div class="temperature">
+            <span class="max">18°</span>
+            <span class="min">/ 10°</span>
+          </div>
+          <hr />
+          <h3 class="day_name">${day}</h3>
+        </div>`;
+  });
+  forecastSection.innerHTML = forecastHTML + `</div>`;
+}
+
+forecastHTML();
