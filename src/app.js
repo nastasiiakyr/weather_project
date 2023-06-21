@@ -22,6 +22,7 @@ function apiFindCity(city) {
     } else {
       cityCurrentTime(lat, lon, locationData);
     }
+    apiCityForecast(lat, lon);
   });
 }
 
@@ -104,6 +105,7 @@ function findCurrentLocationData() {
       weatherIcon.alt = currentLocationData.weather[0].main;
       windSpeed.innerHTML = Math.round(currentLocationData.wind.speed);
       cityCurrentTime(lat, lon, currentLocationData);
+      apiCityForecast(lat, lon);
     });
   });
 }
@@ -351,4 +353,7 @@ function forecastHTML() {
   forecastSection.innerHTML = forecastHTML + `</div>`;
 }
 
-forecastHTML();
+function apiCityForecast(lat, lon) {
+  let apiUrlForecast = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&appid=${apiKeyWeather}&units=metric`;
+  axios.get(apiUrlForecast).then(forecastHTML);
+}
