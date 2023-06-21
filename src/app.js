@@ -16,12 +16,12 @@ function apiFindCity(city) {
     temperature.innerHTML = Math.round(tempC);
     weatherCondition.innerHTML = locationData.weather[0].main;
     weatherIcon.alt = locationData.weather[0].main;
+    windSpeed.innerHTML = Math.round(locationData.wind.speed);
     if (city.toLowerCase().trim() === "kyiv") {
       cityCurrentTime(50, 30, locationData);
     } else {
       cityCurrentTime(lat, lon, locationData);
     }
-    console.log(locationData);
   });
 }
 
@@ -102,6 +102,7 @@ function findCurrentLocationData() {
       temperature.innerHTML = Math.round(tempC);
       weatherCondition.innerHTML = currentLocationData.weather[0].main;
       weatherIcon.alt = currentLocationData.weather[0].main;
+      windSpeed.innerHTML = Math.round(currentLocationData.wind.speed);
       cityCurrentTime(lat, lon, currentLocationData);
     });
   });
@@ -151,8 +152,6 @@ function cityCurrentTime(lat, lon, location) {
     let currentTime = new Date(
       currentTimeUnix.toLocaleString("en-US", { timeZone: "UTC" })
     );
-    console.log(`Реальное время: ${currentTime}`);
-    console.log(response.data);
     let months = [
       "January",
       "February",
@@ -248,6 +247,7 @@ let weatherCondition = document.querySelector("#weatherCondition");
 let weatherIcon = document.querySelector(".weather_icon_js");
 let weatherBg = document.querySelector("body");
 let weatherImg = document.querySelector(".current_weather");
+let windSpeed = document.querySelector("#windSpeed");
 
 let weather = {
   clear: {
