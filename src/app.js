@@ -15,6 +15,7 @@ function apiFindCity(city) {
     tempC = locationData.main.temp;
     temperature.innerHTML = Math.round(tempC);
     weatherCondition.innerHTML = locationData.weather[0].main;
+    weatherIcon.alt = locationData.weather[0].main;
     if (city.toLowerCase().trim() === "kyiv") {
       cityCurrentTime(50, 30, locationData);
     } else {
@@ -100,6 +101,7 @@ function findCurrentLocationData() {
       tempC = currentLocationData.main.temp;
       temperature.innerHTML = Math.round(tempC);
       weatherCondition.innerHTML = currentLocationData.weather[0].main;
+      weatherIcon.alt = currentLocationData.weather[0].main;
       cityCurrentTime(lat, lon, currentLocationData);
     });
   });
