@@ -275,9 +275,15 @@ let weather = {
     "background day": "img/bg_thunderstorm_day.jpg",
     "background night": "img/bg_thunderstorm_night.jpg",
   },
+  haze: {
+    "icon day": "img/icon=haze.png",
+    "icon night": "img/icon=haze.png",
+    "background day": "img/bg-haze-day.jpg",
+    "background night": "img/bg-haze-night.jpg",
+  },
   sample: {
-    "icon day": "☘️",
-    "icon night": "☘️",
+    "icon day": "img/icon=sample.png",
+    "icon night": "img/icon=sample.png",
     "background day": "img/bg_sample.jpg",
     "background night": "img/bg_sample_night.jpg",
   },
