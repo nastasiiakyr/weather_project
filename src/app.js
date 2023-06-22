@@ -118,13 +118,6 @@ fastSearchCurrentLoc.addEventListener("click", function (event) {
   findCurrentLocationData();
 });
 
-// Default Location
-
-function findDefaultLocationData() {
-  let defaultCity = "Odesa";
-  return apiFindCity(defaultCity);
-}
-
 // Conditions of detecting location
 
 function findLocationData() {
@@ -133,7 +126,7 @@ function findLocationData() {
   } else if (currentLocationData === true) {
     return currentLocationData;
   } else {
-    findDefaultLocationData();
+    apiFindCity("Odesa");
   }
 }
 
@@ -321,12 +314,14 @@ function putWeatherCondition(location) {
   }
 }
 
-// Weather forecast
+// Weather 5 days forecast
 
-function forecastHTML() {
-  let forecastSection = document.querySelector("#forecast");
-
-  let daysForecastHTML = [
+function formatForecastDay(timestamp) {
+  let forecastTime = new Date(timestamp * 1000);
+  let day = forecastTime.getDay();
+  let days = [
+    "Sunday",
+    "Monday",
     "Tuesday",
     "Wednesday",
     "Thursday",
@@ -334,26 +329,37 @@ function forecastHTML() {
     "Saturday",
   ];
 
-  let forecastHTML = `<div class = "forecast">`;
-
-  daysForecastHTML.forEach(function (day) {
-    forecastHTML =
-      forecastHTML +
-      `
-  <div class="day">
-          <img src="img/icon=rain-with-thunder.png" alt="☘️" width="48px" />
-          <div class="temperature">
-            <span class="max">18°</span>
-            <span class="min">/ 10°</span>
-          </div>
-          <hr />
-          <h3 class="day_name">${day}</h3>
-        </div>`;
-  });
-  forecastSection.innerHTML = forecastHTML + `</div>`;
+  return days[day];
 }
 
 function apiCityForecast(lat, lon) {
   let apiUrlForecast = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&appid=${apiKeyWeather}&units=metric`;
-  axios.get(apiUrlForecast).then(forecastHTML);
+  axios.get(apiUrlForecast).then(function (response) {
+    let forecastData = response.data.daily;
+    let forecastSection = document.querySelector("#forecast");
+
+    let forecastHTML = `<div class = "forecast">`;
+
+    forecastData.forEach(function (forecastDay, dayIndex) {
+      if (dayIndex < 5) {
+        forecastHTML =
+          forecastHTML +
+          `
+  <div class="day">
+          <img src="${
+            weather[forecastDay.weather[0].main.toLowerCase().trim()][
+              "icon day"
+            ]
+          }" alt="${forecastDay.weather[0].main}" width="48px" />
+          <div class="temperature">
+            <span class="max">${Math.round(forecastDay.temp.max)} °</span>
+            <span class="min">/ ${Math.round(forecastDay.temp.min)} °</span>
+          </div>
+          <hr />
+          <h3 class="day_name">${formatForecastDay(forecastDay.dt)}</h3>
+        </div>`;
+      }
+    });
+    forecastSection.innerHTML = forecastHTML + `</div>`;
+  });
 }
