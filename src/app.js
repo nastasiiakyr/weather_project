@@ -1,93 +1,98 @@
-// API Key
+// API Keys
 
 let apiKeyWeather = "8cd9be374c7c96c39a9fe73f4bf2f055";
 let apiKeyTime = "ESJVB6GUV4NN";
 
-// City detecting
+// Getting city weather data from the API
 
-function apiFindCity(city) {
+function getApiCityWeather(city) {
   let apiUrlCity = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKeyWeather}&units=metric`;
   axios.get(apiUrlCity).then(function (response) {
+    // Getting access to city data in API
     let locationData = response.data;
     let lat = locationData.coord.lat;
     let lon = locationData.coord.lon;
+    // Getting city name and current temperature
     currentCity.innerHTML = locationData.name;
     tempC = locationData.main.temp;
     temperature.innerHTML = Math.round(tempC);
+    // Getting current weather conditions
     weatherCondition.innerHTML = locationData.weather[0].main;
     weatherIcon.alt = locationData.weather[0].main;
     windSpeed.innerHTML = Math.round(locationData.wind.speed);
+    // Getting city current time (for Kiev is special conditions because of issues in the time API)
     if (city.toLowerCase().trim() === "kyiv") {
       cityCurrentTime(50, 30, locationData);
     } else {
       cityCurrentTime(lat, lon, locationData);
     }
+    // Getting city 5 days forecast data
     apiCityForecast(lat, lon);
   });
 }
 
-// Search Location
+// Search engine
 
-let search = document.querySelector("#search_form");
-let searchCity = document.querySelector("#search_city");
-let currentCity = document.querySelector("#current_city");
-
-var tempC;
-
+// Reseting Serch after submiting data
 function resetSearch() {
   searchCity.value = "";
   searchCity.blur();
 }
 
-function findSearchLocationData() {
-  search.addEventListener("submit", function (event) {
+let search = document.querySelector("#search_form");
+let searchCity = document.querySelector("#search_city");
+let currentCity = document.querySelector("#current_city");
+
+search.addEventListener("submit", function (event) {
+  event.preventDefault();
+  let searchLocationValue = searchCity.value;
+  searchLocationValue = searchLocationValue.toString().trim();
+  if (searchLocationValue) {
+    getApiCityWeather(searchLocationValue);
+  } else {
     event.preventDefault();
-    let searchLocationValue = searchCity.value;
-    searchLocationValue = searchLocationValue.toString().trim();
-    if (searchLocationValue) {
-      apiFindCity(searchLocationValue);
-    } else {
-      event.preventDefault();
-    }
-    resetSearch();
+  }
+  resetSearch();
+});
+
+// !!!
+
+let tempC;
+let tempForecastMaxC;
+let tempForecastMinC;
+
+// Getting weather from Fast search buttons
+
+let citiesFastSearch = {
+  kyiv: {
+    "city name": "Kyiv",
+    "getting from HTML": document.querySelector("#kyiv"),
+  },
+  odesa: {
+    "city name": "Odesa",
+    "getting from HTML": document.querySelector("#odesa"),
+  },
+  kharkiv: {
+    "city name": "Kharkiv",
+    "getting from HTML": document.querySelector("#kharkiv"),
+  },
+  lviv: {
+    "city name": "Lviv",
+    "getting from HTML": document.querySelector("#lviv"),
+  },
+  dnipro: {
+    "city name": "Dnipro",
+    "getting from HTML": document.querySelector("#dnipro"),
+  },
+};
+
+for (var city in citiesFastSearch) {
+  let cityHtml = citiesFastSearch[city];
+  cityHtml["getting from HTML"].addEventListener("click", function (event) {
+    event.preventDefault();
+    getApiCityWeather(cityHtml["city name"]);
   });
 }
-
-let searchLocationValue = findSearchLocationData();
-
-// Fast search buttons
-
-let fastSearchKyiv = document.querySelector("#kyiv");
-let fastSearchOdesa = document.querySelector("#odesa");
-let fastSearchKharkiv = document.querySelector("#kharkiv");
-let fastSearchLviv = document.querySelector("#lviv");
-let fastSearchDnipro = document.querySelector("#dnipro");
-let cities = ["Kyiv", "Odesa", "Kharkiv", "Lviv", "Dnipro"];
-
-fastSearchKyiv.addEventListener("click", function (event) {
-  event.preventDefault();
-  apiFindCity(cities[0]);
-});
-
-fastSearchOdesa.addEventListener("click", function (event) {
-  event.preventDefault();
-  apiFindCity(cities[1]);
-});
-
-fastSearchKharkiv.addEventListener("click", function (event) {
-  event.preventDefault();
-  apiFindCity(cities[2]);
-});
-
-fastSearchLviv.addEventListener("click", function (event) {
-  event.preventDefault();
-  apiFindCity(cities[3]);
-});
-
-fastSearchDnipro.addEventListener("click", function (event) {
-  event.preventDefault();
-  apiFindCity(cities[4]);
-});
 
 // Current Location
 
@@ -118,19 +123,13 @@ fastSearchCurrentLoc.addEventListener("click", function (event) {
   findCurrentLocationData();
 });
 
-// Conditions of detecting location
+// Conditions to detect what location data should be used
 
-function findLocationData() {
-  if (searchLocationValue === true) {
-    return searchLocationValue;
-  } else if (currentLocationData === true) {
-    return currentLocationData;
-  } else {
-    apiFindCity("Odesa");
-  }
+if (currentLocationData === true) {
+  currentLocationData;
+} else {
+  getApiCityWeather("Odesa");
 }
-
-let locationData = findLocationData();
 
 // Current time of the city
 
@@ -212,10 +211,12 @@ function cityCurrentTime(lat, lon, location) {
 
 // Celsius & Fahrenheit switchng
 
-let temperature = document.querySelector("#curTempNumber");
+let temperature = document.querySelector("#cur_temp_number");
 
 let degreeC = document.querySelector("#celsius");
 let degreeF = document.querySelector("#fahrenheit");
+
+let tempForecastMax;
 
 function toFahrenheit(C) {
   return 1.8 * C + 32;
@@ -231,18 +232,17 @@ degreeF.addEventListener("click", function (event) {
 degreeC.addEventListener("click", function (event) {
   event.preventDefault();
   temperature.innerHTML = Math.round(tempC);
-  // Math.round(currentTempC());
   degreeF.classList.replace("focused", "active");
   degreeC.classList.replace("active", "focused");
 });
 
 // Detecting Weather condition
 
-let weatherCondition = document.querySelector("#weatherCondition");
+let weatherCondition = document.querySelector("#weather_condition");
 let weatherIcon = document.querySelector(".weather_icon_js");
 let weatherBg = document.querySelector("body");
 let weatherImg = document.querySelector(".current_weather");
-let windSpeed = document.querySelector("#windSpeed");
+let windSpeed = document.querySelector("#wind_speed");
 
 let weather = {
   clear: {
@@ -338,34 +338,38 @@ function formatForecastDay(timestamp) {
   return days[day];
 }
 
-function apiCityForecast(lat, lon) {
-  let apiUrlForecast = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&appid=${apiKeyWeather}&units=metric`;
-  axios.get(apiUrlForecast).then(function (response) {
-    let forecastData = response.data.daily;
-    let forecastSection = document.querySelector("#forecast");
+function pushHtmlForecast(response) {
+  let forecastData = response.data.daily;
+  let forecastSection = document.querySelector("#forecast");
+  let forecastHTML = `<div class = "forecast">`;
 
-    let forecastHTML = `<div class = "forecast">`;
-
-    forecastData.forEach(function (forecastDay, dayIndex) {
-      if (dayIndex < 5) {
-        forecastHTML =
-          forecastHTML +
-          `
-  <div class="day">
+  forecastData.forEach(function (forecastDay, dayIndex) {
+    if (dayIndex < 5) {
+      tempForecastMaxC = forecastDay.temp.max;
+      tempForecastMax = Math.round(tempForecastMaxC);
+      tempForecastMinC = forecastDay.temp.min;
+      tempForecastMin = Math.round(tempForecastMinC);
+      forecastHTML =
+        forecastHTML +
+        `<div class="day">
           <img src="${
             weather[forecastDay.weather[0].main.toLowerCase().trim()][
               "icon day"
             ]
           }" alt="${forecastDay.weather[0].main}" width="48px" />
           <div class="temperature">
-            <span class="max">${Math.round(forecastDay.temp.max)} °</span>
-            <span class="min">/ ${Math.round(forecastDay.temp.min)} °</span>
+            <span class="max" id="temp_forecast_max">${tempForecastMax} °</span>
+            <span class="min" id="tempForecastMin">/ ${tempForecastMin} °</span>
           </div>
           <hr />
           <h3 class="day_name">${formatForecastDay(forecastDay.dt)}</h3>
         </div>`;
-      }
-    });
-    forecastSection.innerHTML = forecastHTML + `</div>`;
+    }
   });
+  forecastSection.innerHTML = forecastHTML + `</div>`;
+}
+
+function apiCityForecast(lat, lon) {
+  let apiUrlForecast = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&appid=${apiKeyWeather}&units=metric`;
+  axios.get(apiUrlForecast).then(pushHtmlForecast);
 }

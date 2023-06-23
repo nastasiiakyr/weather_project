@@ -8,7 +8,6 @@ body,
 body {
   background-attachment: fixed;
   background-size: 100% 100%;
-  /* backdrop-filter: blur(15px); */
 
   position: absolute;
   top: 0;
@@ -239,7 +238,7 @@ a {
   align-items: flex-start;
 }
 
-.curTempNumber {
+.cur_temp_number {
   margin-right: 5px;
 }
 
