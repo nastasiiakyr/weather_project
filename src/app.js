@@ -55,13 +55,18 @@ search.addEventListener("submit", function (event) {
   resetSearch();
 });
 
-// !!!
-
-let tempC;
-let tempForecastMaxC;
-let tempForecastMinC;
-
 // Getting weather from Fast search buttons
+
+// Current location
+
+let curLocFastSearch = document.querySelector("#currentLoc");
+
+curLocFastSearch.addEventListener("click", function (event) {
+  event.preventDefault();
+  getApiCurrLocWeather();
+});
+
+// Cities
 
 let citiesFastSearch = {
   kyiv: {
@@ -94,42 +99,44 @@ for (var city in citiesFastSearch) {
   });
 }
 
-// Current Location
+// Getiing current location weather data from the API
 
-function findCurrentLocationData() {
+function getApiCurrLocWeather() {
+  // Detecting current geolocation
   navigator.geolocation.getCurrentPosition(function (position) {
     let lat = position.coords.latitude;
     let lon = position.coords.longitude;
+    // Getting access to the current location data in API
     let apiUrlCurrent = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKeyWeather}&units=metric`;
     axios.get(apiUrlCurrent).then(function (response) {
       let currentLocationData = response.data;
+      // Getting city name and current temperature
       currentCity.innerHTML = currentLocationData.name;
       tempC = currentLocationData.main.temp;
       temperature.innerHTML = Math.round(tempC);
+      // Getting current weather conditions
       weatherCondition.innerHTML = currentLocationData.weather[0].main;
       weatherIcon.alt = currentLocationData.weather[0].main;
       windSpeed.innerHTML = Math.round(currentLocationData.wind.speed);
+      // Getting current time
       cityCurrentTime(lat, lon, currentLocationData);
+      // Getting 5 days forecast data
       apiCityForecast(lat, lon);
     });
   });
 }
 
-let currentLocationData = findCurrentLocationData();
-let fastSearchCurrentLoc = document.querySelector("#currentLoc");
+let currLocWeather = getApiCurrLocWeather();
 
-fastSearchCurrentLoc.addEventListener("click", function (event) {
-  event.preventDefault();
-  findCurrentLocationData();
-});
+// Conditions to detect what location data should be used (current or default)
 
-// Conditions to detect what location data should be used
-
-if (currentLocationData === true) {
-  currentLocationData;
+if (currLocWeather === true) {
+  currLocWeather;
 } else {
   getApiCityWeather("Odesa");
 }
+
+// !!!Detecting all parts of data
 
 // Current time of the city
 
@@ -217,6 +224,9 @@ let degreeC = document.querySelector("#celsius");
 let degreeF = document.querySelector("#fahrenheit");
 
 let tempForecastMax;
+let tempC;
+let tempForecastMaxC;
+let tempForecastMinC;
 
 function toFahrenheit(C) {
   return 1.8 * C + 32;
