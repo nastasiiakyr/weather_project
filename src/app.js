@@ -325,7 +325,10 @@ function getApiCityWeather(city) {
     weatherIcon.alt = locationData.weather[0].main;
     windSpeed.innerHTML = Math.round(locationData.wind.speed);
     // Getting city current time (for Kyiv (Kiev) is special conditions because of issues in the time API)
-    if (city.toLowerCase().trim() === "kyiv" || "kiev") {
+    if (
+      city.toLowerCase().trim() === "kyiv" ||
+      city.toLowerCase().trim() === "kiev"
+    ) {
       getCurrTime(50, 30, locationData);
     } else {
       getCurrTime(lat, lon, locationData);
