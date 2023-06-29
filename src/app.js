@@ -3,250 +3,9 @@
 let apiKeyWeather = "8cd9be374c7c96c39a9fe73f4bf2f055";
 let apiKeyTime = "ESJVB6GUV4NN";
 
-// Getting city weather data from the API
+// Detecting all parts of weather data
 
-function getApiCityWeather(city) {
-  let apiUrlCity = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKeyWeather}&units=metric`;
-  axios.get(apiUrlCity).then(function (response) {
-    // Getting access to city data in API
-    let locationData = response.data;
-    let lat = locationData.coord.lat;
-    let lon = locationData.coord.lon;
-    // Getting city name and current temperature
-    currentCity.innerHTML = locationData.name;
-    tempC = locationData.main.temp;
-    temperature.innerHTML = Math.round(tempC);
-    // Getting current weather conditions
-    weatherCondition.innerHTML = locationData.weather[0].main;
-    weatherIcon.alt = locationData.weather[0].main;
-    windSpeed.innerHTML = Math.round(locationData.wind.speed);
-    // Getting city current time (for Kiev is special conditions because of issues in the time API)
-    if (city.toLowerCase().trim() === "kyiv") {
-      cityCurrentTime(50, 30, locationData);
-    } else {
-      cityCurrentTime(lat, lon, locationData);
-    }
-    // Getting city 5 days forecast data
-    apiCityForecast(lat, lon);
-  });
-}
-
-// Search engine
-
-// Reseting Serch after submiting data
-function resetSearch() {
-  searchCity.value = "";
-  searchCity.blur();
-}
-
-let search = document.querySelector("#search_form");
-let searchCity = document.querySelector("#search_city");
-let currentCity = document.querySelector("#current_city");
-
-search.addEventListener("submit", function (event) {
-  event.preventDefault();
-  let searchLocationValue = searchCity.value;
-  searchLocationValue = searchLocationValue.toString().trim();
-  if (searchLocationValue) {
-    getApiCityWeather(searchLocationValue);
-  } else {
-    event.preventDefault();
-  }
-  resetSearch();
-});
-
-// Getting weather from Fast search buttons
-
-// Current location
-
-let curLocFastSearch = document.querySelector("#currentLoc");
-
-curLocFastSearch.addEventListener("click", function (event) {
-  event.preventDefault();
-  getApiCurrLocWeather();
-});
-
-// Cities
-
-let citiesFastSearch = {
-  kyiv: {
-    "city name": "Kyiv",
-    "getting from HTML": document.querySelector("#kyiv"),
-  },
-  odesa: {
-    "city name": "Odesa",
-    "getting from HTML": document.querySelector("#odesa"),
-  },
-  kharkiv: {
-    "city name": "Kharkiv",
-    "getting from HTML": document.querySelector("#kharkiv"),
-  },
-  lviv: {
-    "city name": "Lviv",
-    "getting from HTML": document.querySelector("#lviv"),
-  },
-  dnipro: {
-    "city name": "Dnipro",
-    "getting from HTML": document.querySelector("#dnipro"),
-  },
-};
-
-for (var city in citiesFastSearch) {
-  let cityHtml = citiesFastSearch[city];
-  cityHtml["getting from HTML"].addEventListener("click", function (event) {
-    event.preventDefault();
-    getApiCityWeather(cityHtml["city name"]);
-  });
-}
-
-// Getiing current location weather data from the API
-
-function getApiCurrLocWeather() {
-  // Detecting current geolocation
-  navigator.geolocation.getCurrentPosition(function (position) {
-    let lat = position.coords.latitude;
-    let lon = position.coords.longitude;
-    // Getting access to the current location data in API
-    let apiUrlCurrent = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKeyWeather}&units=metric`;
-    axios.get(apiUrlCurrent).then(function (response) {
-      let currentLocationData = response.data;
-      // Getting city name and current temperature
-      currentCity.innerHTML = currentLocationData.name;
-      tempC = currentLocationData.main.temp;
-      temperature.innerHTML = Math.round(tempC);
-      // Getting current weather conditions
-      weatherCondition.innerHTML = currentLocationData.weather[0].main;
-      weatherIcon.alt = currentLocationData.weather[0].main;
-      windSpeed.innerHTML = Math.round(currentLocationData.wind.speed);
-      // Getting current time
-      cityCurrentTime(lat, lon, currentLocationData);
-      // Getting 5 days forecast data
-      apiCityForecast(lat, lon);
-    });
-  });
-}
-
-let currLocWeather = getApiCurrLocWeather();
-
-// Conditions to detect what location data should be used (current or default)
-
-if (currLocWeather === true) {
-  currLocWeather;
-} else {
-  getApiCityWeather("Odesa");
-}
-
-// !!!Detecting all parts of data
-
-// Current time of the city
-
-let day = document.querySelector("#current_day");
-let month = document.querySelector("#current_month");
-let date = document.querySelector("#current_date");
-let hours = document.querySelector("#current_hours");
-let minutes = document.querySelector("#current_minutes");
-
-function cityCurrentTime(lat, lon, location) {
-  let apiUrlTime = `https://api.timezonedb.com/v2.1/get-time-zone?key=${apiKeyTime}&format=json&by=position&lat=${lat}&lng=${lon}`;
-  axios.get(apiUrlTime).then(function (response) {
-    let currentTimeUnix = new Date(response.data.timestamp * 1000);
-    let currentTime = new Date(
-      currentTimeUnix.toLocaleString("en-US", { timeZone: "UTC" })
-    );
-    let months = [
-      "January",
-      "February",
-      "March",
-      "April",
-      "May",
-      "June",
-      "July",
-      "August",
-      "September",
-      "October",
-      "November",
-      "December",
-    ];
-    let days = [
-      "Sunday",
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
-    ];
-
-    day.innerHTML = days[currentTime.getDay()];
-    month.innerHTML = months[currentTime.getMonth()];
-
-    function dateType(date) {
-      if (date < 10) {
-        return "0" + currentTime.getDate();
-      } else {
-        return currentTime.getDate();
-      }
-    }
-    date.innerHTML = dateType(date);
-
-    function hoursType(hours) {
-      hours = currentTime.getHours();
-      if (hours === 0) {
-        return "0" + hours;
-      } else if (hours < 10) {
-        return "0" + hours;
-      } else {
-        return hours;
-      }
-    }
-    hours.innerHTML = hoursType(hours);
-
-    function minType(min) {
-      min = currentTime.getMinutes();
-      if (min === 0) {
-        return "0" + min;
-      } else if (min < 10) {
-        return "0" + min;
-      } else {
-        return min;
-      }
-    }
-    minutes.innerHTML = minType(minutes);
-    putWeatherCondition(location);
-  });
-}
-
-// Celsius & Fahrenheit switchng
-
-let temperature = document.querySelector("#cur_temp_number");
-
-let degreeC = document.querySelector("#celsius");
-let degreeF = document.querySelector("#fahrenheit");
-
-let tempForecastMax;
-let tempC;
-let tempForecastMaxC;
-let tempForecastMinC;
-
-function toFahrenheit(C) {
-  return 1.8 * C + 32;
-}
-
-degreeF.addEventListener("click", function (event) {
-  event.preventDefault();
-  temperature.innerHTML = Math.round(toFahrenheit(tempC));
-  degreeC.classList.replace("focused", "active");
-  degreeF.classList.replace("active", "focused");
-});
-
-degreeC.addEventListener("click", function (event) {
-  event.preventDefault();
-  temperature.innerHTML = Math.round(tempC);
-  degreeF.classList.replace("focused", "active");
-  degreeC.classList.replace("active", "focused");
-});
-
-// Detecting Weather condition
+// Icon & background due to current weather conditions
 
 let weatherCondition = document.querySelector("#weather_condition");
 let weatherIcon = document.querySelector(".weather_icon_js");
@@ -330,7 +89,90 @@ function putWeatherCondition(location) {
   }
 }
 
-// Weather 5 days forecast
+// Current time of the city
+
+let day = document.querySelector("#current_day");
+let month = document.querySelector("#current_month");
+let date = document.querySelector("#current_date");
+let hours = document.querySelector("#current_hours");
+let minutes = document.querySelector("#current_minutes");
+
+function getCurrTime(lat, lon, location) {
+  let apiUrlTime = `https://api.timezonedb.com/v2.1/get-time-zone?key=${apiKeyTime}&format=json&by=position&lat=${lat}&lng=${lon}`;
+  axios.get(apiUrlTime).then(function (response) {
+    // Getting access to city current UNIX time in API and performing it to UTC timezone
+    let currentTimeUnix = new Date(response.data.timestamp * 1000);
+    let currentTime = new Date(
+      currentTimeUnix.toLocaleString("en-US", { timeZone: "UTC" })
+    );
+    // Getting current day
+    let days = [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+    ];
+    day.innerHTML = days[currentTime.getDay()];
+    // Getting current month
+    let months = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
+    month.innerHTML = months[currentTime.getMonth()];
+    // Getting current date in format XX
+    function detectDateType(date) {
+      if (date < 10) {
+        return "0" + currentTime.getDate();
+      } else {
+        return currentTime.getDate();
+      }
+    }
+    date.innerHTML = detectDateType(date);
+    // Getting current hour in format XX
+    function detectHoursType(hours) {
+      hours = currentTime.getHours();
+      if (hours === 0) {
+        return "0" + hours;
+      } else if (hours < 10) {
+        return "0" + hours;
+      } else {
+        return hours;
+      }
+    }
+    hours.innerHTML = detectHoursType(hours);
+    // Getting current minutes in format XX
+    function detectMinType(min) {
+      min = currentTime.getMinutes();
+      if (min === 0) {
+        return "0" + min;
+      } else if (min < 10) {
+        return "0" + min;
+      } else {
+        return min;
+      }
+    }
+    minutes.innerHTML = detectMinType(minutes);
+    // Using weather condition background due to current time
+    putWeatherCondition(location);
+  });
+}
+
+// 5 days weather forecast
+
+let forecastData;
 
 function formatForecastDay(timestamp) {
   let forecastTime = new Date(timestamp * 1000);
@@ -348,38 +190,223 @@ function formatForecastDay(timestamp) {
   return days[day];
 }
 
-function pushHtmlForecast(response) {
-  let forecastData = response.data.daily;
-  let forecastSection = document.querySelector("#forecast");
-  let forecastHTML = `<div class = "forecast">`;
-
-  forecastData.forEach(function (forecastDay, dayIndex) {
-    if (dayIndex < 5) {
-      tempForecastMaxC = forecastDay.temp.max;
-      tempForecastMax = Math.round(tempForecastMaxC);
-      tempForecastMinC = forecastDay.temp.min;
-      tempForecastMin = Math.round(tempForecastMinC);
-      forecastHTML =
-        forecastHTML +
-        `<div class="day">
+function getApiCityForecast(lat, lon) {
+  let apiUrlForecast = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&appid=${apiKeyWeather}&units=metric`;
+  axios.get(apiUrlForecast).then(function (response) {
+    // Getting data from API
+    forecastData = response.data.daily;
+    let forecastSection = document.querySelector("#forecast");
+    let forecastHTML = `<div class = "forecast">`;
+    // Pushing code & data to HTML for each of 5 next days
+    forecastData.forEach(function (forecastDay, dayIndex) {
+      if (dayIndex < 5) {
+        // Getting forecast temperatures
+        let tempForecastMax = `${Math.round(forecastDay.temp.max)} °`;
+        let tempForecastMin = `/ ${Math.round(forecastDay.temp.min)} °`;
+        // HTML code for day forecast data card
+        forecastHTML =
+          forecastHTML +
+          `<div class="day">
           <img src="${
             weather[forecastDay.weather[0].main.toLowerCase().trim()][
               "icon day"
             ]
           }" alt="${forecastDay.weather[0].main}" width="48px" />
           <div class="temperature">
-            <span class="max" id="temp_forecast_max">${tempForecastMax} °</span>
-            <span class="min" id="tempForecastMin">/ ${tempForecastMin} °</span>
+            <span class="max" id="temp_forecast_max">${tempForecastMax}</span>
+            <span class="min" id="temp_forecast_min">${tempForecastMin}</span>
           </div>
           <hr />
           <h3 class="day_name">${formatForecastDay(forecastDay.dt)}</h3>
         </div>`;
-    }
+      }
+    });
+    // Pushing code to HTML
+    forecastSection.innerHTML = forecastHTML + `</div>`;
   });
-  forecastSection.innerHTML = forecastHTML + `</div>`;
 }
 
-function apiCityForecast(lat, lon) {
-  let apiUrlForecast = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&appid=${apiKeyWeather}&units=metric`;
-  axios.get(apiUrlForecast).then(pushHtmlForecast);
+// Celsius & Fahrenheit switching
+
+let temperature = document.querySelector("#cur_temp_number");
+let tempC;
+
+let degreeC = document.querySelector("#celsius");
+let degreeF = document.querySelector("#fahrenheit");
+
+function switchToFahrenheit(C) {
+  return 1.8 * C + 32;
+}
+
+degreeF.addEventListener("click", function (event) {
+  event.preventDefault();
+  // Current temperature switching
+  temperature.innerHTML = Math.round(switchToFahrenheit(tempC));
+  // Forecast temperature switching for 5 days
+  let maxTemps = document.querySelectorAll("#temp_forecast_max");
+  let minTemps = document.querySelectorAll("#temp_forecast_min");
+  maxTemps.forEach(function (maxTemp, index) {
+    maxTemp.innerHTML = `${Math.round(
+      switchToFahrenheit(forecastData[index].temp.max)
+    )} °`;
+  });
+  minTemps.forEach(function (minTemp, index) {
+    minTemp.innerHTML = `/ ${Math.round(
+      switchToFahrenheit(forecastData[index].temp.min)
+    )} °`;
+  });
+  // Changing button's status
+  degreeC.classList.replace("focused", "active");
+  degreeF.classList.replace("active", "focused");
+});
+
+degreeC.addEventListener("click", function (event) {
+  event.preventDefault();
+  // Current temperature switching
+  temperature.innerHTML = Math.round(tempC);
+  // Forecast temperature switching
+  let maxTemps = document.querySelectorAll("temp_forecast_max");
+  let minTemps = document.querySelectorAll("temp_forecast_min");
+  maxTemps.forEach(function (maxTemp, index) {
+    maxTemp.innerHTML = `${Math.round(forecastData[index].temp.max)} °`;
+  });
+  minTemps.forEach(function (minTemp, index) {
+    minTemp.innerHTML = `/ ${Math.round(forecastData[index].temp.min)} °`;
+  });
+  // Changing button's status
+  degreeF.classList.replace("focused", "active");
+  degreeC.classList.replace("active", "focused");
+});
+
+// Getiing current location weather data from the API
+
+function getApiCurrLocWeather() {
+  // Detecting current geolocation
+  navigator.geolocation.getCurrentPosition(function (position) {
+    let lat = position.coords.latitude;
+    let lon = position.coords.longitude;
+    // Getting access to the current location data in API
+    let apiUrlCurrent = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKeyWeather}&units=metric`;
+    axios.get(apiUrlCurrent).then(function (response) {
+      let currentLocationData = response.data;
+      // Getting city name and current temperature
+      currentCity.innerHTML = currentLocationData.name;
+      tempC = currentLocationData.main.temp;
+      temperature.innerHTML = Math.round(tempC);
+      // Getting current weather conditions
+      weatherCondition.innerHTML = currentLocationData.weather[0].main;
+      weatherIcon.alt = currentLocationData.weather[0].main;
+      windSpeed.innerHTML = Math.round(currentLocationData.wind.speed);
+      // Getting current time
+      getCurrTime(lat, lon, currentLocationData);
+      // Getting 5 days forecast data
+      getApiCityForecast(lat, lon);
+    });
+  });
+}
+
+let currLocWeather = getApiCurrLocWeather();
+
+// Getting city weather data from the API
+
+function getApiCityWeather(city) {
+  let apiUrlCity = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKeyWeather}&units=metric`;
+  axios.get(apiUrlCity).then(function (response) {
+    // Getting access to city data in API
+    let locationData = response.data;
+    let lat = locationData.coord.lat;
+    let lon = locationData.coord.lon;
+    // Getting city name and current temperature
+    currentCity.innerHTML = locationData.name;
+    tempC = locationData.main.temp;
+    temperature.innerHTML = Math.round(tempC);
+    // Getting current weather conditions
+    weatherCondition.innerHTML = locationData.weather[0].main;
+    weatherIcon.alt = locationData.weather[0].main;
+    windSpeed.innerHTML = Math.round(locationData.wind.speed);
+    // Getting city current time (for Kiev is special conditions because of issues in the time API)
+    if (city.toLowerCase().trim() === "kyiv") {
+      getCurrTime(50, 30, locationData);
+    } else {
+      getCurrTime(lat, lon, locationData);
+    }
+    // Getting city 5 days forecast data
+    getApiCityForecast(lat, lon);
+  });
+}
+
+// Conditions to detect what location data should be used (current or default)
+
+if (currLocWeather === true) {
+  currLocWeather;
+} else {
+  getApiCityWeather("Odesa");
+}
+
+// Search engine
+
+// Reseting Serch after submiting data
+function resetSearch() {
+  searchCity.value = "";
+  searchCity.blur();
+}
+
+let search = document.querySelector("#search_form");
+let searchCity = document.querySelector("#search_city");
+let currentCity = document.querySelector("#current_city");
+
+search.addEventListener("submit", function (event) {
+  event.preventDefault();
+  let searchLocationValue = searchCity.value;
+  searchLocationValue = searchLocationValue.toString().trim();
+  if (searchLocationValue) {
+    getApiCityWeather(searchLocationValue);
+  } else {
+    event.preventDefault();
+  }
+  resetSearch();
+});
+
+// Getting weather from Fast search buttons
+
+// Current location
+
+let curLocFastSearch = document.querySelector("#currentLoc");
+
+curLocFastSearch.addEventListener("click", function (event) {
+  event.preventDefault();
+  getApiCurrLocWeather();
+});
+
+// Cities
+
+let citiesFastSearch = {
+  kyiv: {
+    "city name": "Kyiv",
+    "getting from HTML": document.querySelector("#kyiv"),
+  },
+  odesa: {
+    "city name": "Odesa",
+    "getting from HTML": document.querySelector("#odesa"),
+  },
+  kharkiv: {
+    "city name": "Kharkiv",
+    "getting from HTML": document.querySelector("#kharkiv"),
+  },
+  lviv: {
+    "city name": "Lviv",
+    "getting from HTML": document.querySelector("#lviv"),
+  },
+  dnipro: {
+    "city name": "Dnipro",
+    "getting from HTML": document.querySelector("#dnipro"),
+  },
+};
+
+for (var city in citiesFastSearch) {
+  let cityHtml = citiesFastSearch[city];
+  cityHtml["getting from HTML"].addEventListener("click", function (event) {
+    event.preventDefault();
+    getApiCityWeather(cityHtml["city name"]);
+  });
 }
