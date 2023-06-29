@@ -265,8 +265,8 @@ degreeC.addEventListener("click", function (event) {
   // Current temperature switching
   temperature.innerHTML = Math.round(tempC);
   // Forecast temperature switching
-  let maxTemps = document.querySelectorAll("temp_forecast_max");
-  let minTemps = document.querySelectorAll("temp_forecast_min");
+  let maxTemps = document.querySelectorAll("#temp_forecast_max");
+  let minTemps = document.querySelectorAll("#temp_forecast_min");
   maxTemps.forEach(function (maxTemp, index) {
     maxTemp.innerHTML = `${Math.round(forecastData[index].temp.max)} °`;
   });
