@@ -164,6 +164,7 @@ a {
 .fast_search {
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
   align-items: flex-start;
   padding: 0 0 0 40px;
   gap: 16px;
@@ -405,4 +406,30 @@ a {
 .code_link {
   color: #fff;
   font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .fast_search {
+    padding-left: 20px;
+  }
+}
+
+@media (max-width: 576px) {
+  .weather {
+    flex-wrap: wrap;
+    height: auto !important;
+  }
+
+  .current_city_date {
+    width: 100%;
+  }
+
+  .current_temperature {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .cur_temp_number {
+    font-size: 56px;
+  }
 }
